@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+
+  :root {
+    --brand-yellow: #FCD307;
+    --brand-yellow-dark: #E6BE00;
+    --brand-green: #4CAF50;
+    --brand-red: #E53935;
+  }
+}
+
+@layer utilities {
+  .bg-brand-yellow { background-color: #FCD307; }
+  .bg-brand-yellow-dark { background-color: #E6BE00; }
+  .bg-brand-green { background-color: #4CAF50; }
+  .bg-brand-red { background-color: #E53935; }
+  .text-brand-yellow { color: #FCD307; }
+  .text-brand-yellow-dark { color: #E6BE00; }
+  .text-brand-green { color: #4CAF50; }
+  .text-brand-red { color: #E53935; }
+  .hover\:bg-brand-yellow:hover { background-color: #FCD307; }
+  .hover\:bg-brand-yellow-dark:hover { background-color: #E6BE00; }
+  .hover\:text-brand-yellow:hover { color: #FCD307; }
+  .border-brand-yellow { border-color: #FCD307; }
+  .ring-brand-yellow { --tw-ring-color: #FCD307; }
+  .focus\:ring-brand-yellow:focus { --tw-ring-color: #FCD307; }
+  .accent-brand-yellow { accent-color: #FCD307; }
+}

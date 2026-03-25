@@ -32,21 +32,20 @@ export function Pagination({
   const pages = getPageNumbers(currentPage, totalPages);
 
   const btnBase =
-    "min-w-[2.25rem] h-9 px-2 flex items-center justify-center rounded-lg text-sm font-medium transition-colors";
-  const btnActive = "bg-red-500 text-white shadow-sm";
-  const btnInactive =
-    "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700";
+    "min-w-[3rem] h-12 px-3 flex items-center justify-center rounded-lg text-base font-medium transition-colors";
+  const btnActive = "bg-brand-yellow text-gray-900 font-bold shadow-sm";
+  const btnInactive = "text-gray-600 hover:bg-gray-100";
   const btnDisabled = "opacity-40 cursor-not-allowed";
 
   return (
     <nav
       aria-label="Pagination"
-      className="flex items-center justify-center gap-1 flex-wrap"
+      className="flex items-center justify-center gap-1.5 flex-wrap"
     >
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`${btnBase} px-3 gap-1 ${currentPage === 1 ? btnDisabled + " text-gray-400 dark:text-gray-600" : btnInactive}`}
+        className={`${btnBase} px-4 gap-1 ${currentPage === 1 ? btnDisabled + " text-gray-400" : btnInactive}`}
       >
         <span aria-hidden>←</span> Prev
       </button>
@@ -55,7 +54,7 @@ export function Pagination({
         p === "..." ? (
           <span
             key={`ellipsis-${i}`}
-            className="min-w-[2.25rem] h-9 flex items-center justify-center text-gray-400 text-sm"
+            className="min-w-[3rem] h-12 flex items-center justify-center text-gray-400 text-base"
           >
             …
           </span>
@@ -74,7 +73,7 @@ export function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`${btnBase} px-3 gap-1 ${currentPage === totalPages ? btnDisabled + " text-gray-400 dark:text-gray-600" : btnInactive}`}
+        className={`${btnBase} px-4 gap-1 ${currentPage === totalPages ? btnDisabled + " text-gray-400" : btnInactive}`}
       >
         Next <span aria-hidden>→</span>
       </button>

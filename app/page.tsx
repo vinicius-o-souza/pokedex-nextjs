@@ -1,15 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
-
-// ---------------------------------------------------------------------------
-// Tech stack data
-// ---------------------------------------------------------------------------
 
 const techStack = [
   {
     name: "Next.js 14",
     icon: "▲",
     description: "App Router, SSR, Server Components",
-    color: "bg-black text-white dark:bg-white dark:text-black",
+    color: "bg-black text-white",
   },
   {
     name: "Drupal",
@@ -33,13 +30,9 @@ const techStack = [
     name: "OAuth 2.0",
     icon: "🔐",
     description: "NextAuth · token refresh flow",
-    color: "bg-yellow-500 text-black",
+    color: "bg-brand-yellow text-gray-900",
   },
 ] as const;
-
-// ---------------------------------------------------------------------------
-// Feature list data
-// ---------------------------------------------------------------------------
 
 const features = [
   {
@@ -70,7 +63,7 @@ const features = [
     icon: "🎨",
     title: "Responsive Design",
     description:
-      "Mobile-first Tailwind CSS layout with dark mode support and Pokémon-themed colour palette.",
+      "Mobile-first Tailwind CSS layout with Pokémon-themed colour palette.",
   },
   {
     icon: "🔄",
@@ -80,74 +73,89 @@ const features = [
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
-
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-yellow-400 px-6 py-28 text-white dark:from-red-800 dark:via-red-700 dark:to-yellow-600 sm:py-40">
-        {/* decorative pokéball rings */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full border-[48px] border-white/10"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full border-[56px] border-white/10"
-        />
+      <section className="bg-brand-yellow">
+        <div className="container mx-auto flex flex-col-reverse items-center gap-8 px-6 py-16 lg:flex-row lg:justify-between lg:py-24 lg:px-8">
+          {/* Left: text */}
+          <div className="max-w-xl text-center lg:text-left">
+            <h1 className="mb-4 text-5xl font-medium leading-tight text-gray-900 lg:text-7xl">
+              Find all your<br />
+              favorite<br />
+              <b class="font-extrabold">Pokemon</b>
+            </h1>
+            <h2 className="mb-8 text-1xl lg:text-2xl text-gray-700">
+              You can know the type of Pokemon, its strengths,
+              disadvantages and abilities.
+            </h2>
+            <div className="flex flex-col items-center gap-3 lg:flex-row">
+              <Link
+                href="/pokedex"
+                className="rounded-full bg-brand-green px-8 py-3 text-base font-bold text-white shadow-md transition hover:brightness-110 active:scale-95"
+              >
+                See pokemons
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-full border-2 border-gray-900/20 px-8 py-3 text-base font-bold text-gray-900 transition hover:bg-black/10 active:scale-95"
+              >
+                Register
+              </Link>
+            </div>
+            <p className="mt-5 text-lg text-gray-600">
+              Already a trainer?{" "}
+              <Link href="/login" className="font-semibold underline underline-offset-2 hover:text-gray-900">
+                Sign in here
+              </Link>
+            </p>
+          </div>
 
-        <div className="relative mx-auto max-w-4xl text-center">
-          <span className="mb-6 inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-semibold uppercase tracking-widest backdrop-blur">
-            Portfolio Project
-          </span>
-
-          <h1 className="mb-4 text-5xl font-extrabold leading-tight drop-shadow-lg sm:text-7xl">
-            Pokédex
-          </h1>
-
-          <p className="mx-auto mb-10 max-w-2xl text-lg font-medium text-white/90 sm:text-xl">
-            A full-stack portfolio project built with{" "}
-            <span className="font-bold text-white">Next.js</span> &{" "}
-            <span className="font-bold text-white">Drupal</span> — showcasing
-            decoupled CMS architecture, OAuth 2.0 authentication, and
-            server-side rendering.
-          </p>
-
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/login"
-              className="rounded-full bg-white px-8 py-3 text-base font-bold text-red-600 shadow-lg transition hover:bg-red-50 active:scale-95"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-full border-2 border-white px-8 py-3 text-base font-bold text-white transition hover:bg-white/10 active:scale-95"
-            >
-              Register
-            </Link>
+          {/* Right: Pokedex */}
+          <div className="relative flex-shrink-0">
+            <Image
+              src="/pokedex.svg"
+              alt="POkedex"
+              width={480}
+              height={480}
+              priority
+              className="drop-shadow-xl"
+            />
           </div>
         </div>
       </section>
 
-      {/* ── Tech Stack ───────────────────────────────────────────────────── */}
-      <section className="bg-white px-6 py-20 dark:bg-gray-900">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+      {/* ── Team Rocket banner ────────────────────────────────────────────── */}
+      <section className="bg-gray-900 px-6 py-6">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-6 lg:flex-row">
+          <p className="text-center text-sm font-medium text-gray-400 lg:text-left">
+            Beware of Team Rocket — they&apos;re always watching.
+          </p>
+          <Link
+            href="/legendarios"
+            className="rounded-full border border-gray-600 px-5 py-2 text-sm font-semibold text-gray-300 transition hover:border-brand-yellow hover:text-brand-yellow"
+          >
+            View Legendaries →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Built with ───────────────────────────────────────────────────── */}
+      <section className="bg-white px-6 py-20">
+        <div className="container mx-auto">
+          <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 lg:text-4xl">
             Built with
           </h2>
-          <p className="mb-12 text-center text-gray-500 dark:text-gray-400">
+          <p className="mb-12 text-center text-gray-500">
             Modern tools chosen for real-world, production-grade patterns.
           </p>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
             {techStack.map((tech) => (
               <div
                 key={tech.name}
-                className="flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-5 text-center shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                className="flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-5 text-center shadow-sm transition hover:shadow-md"
               >
                 <span
                   className={`flex h-12 w-12 items-center justify-center rounded-xl text-lg font-extrabold ${tech.color}`}
@@ -155,12 +163,8 @@ export default function HomePage() {
                   {tech.icon}
                 </span>
                 <div>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">
-                    {tech.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                    {tech.description}
-                  </p>
+                  <p className="text-sm font-bold text-gray-900">{tech.name}</p>
+                  <p className="mt-0.5 text-xs text-gray-500">{tech.description}</p>
                 </div>
               </div>
             ))}
@@ -168,28 +172,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Features ─────────────────────────────────────────────────────── */}
-      <section className="bg-gray-50 px-6 py-20 dark:bg-gray-950">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+      {/* ── What this project demonstrates ───────────────────────────────── */}
+      <section className="bg-gray-50 px-6 py-20">
+        <div className="container mx-auto">
+          <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 lg:text-4xl">
             What this project demonstrates
           </h2>
-          <p className="mb-12 text-center text-gray-500 dark:text-gray-400">
+          <p className="mb-12 text-center text-gray-500">
             A showcase of full-stack engineering patterns across the entire
             request lifecycle.
           </p>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-3">
             {features.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md"
               >
                 <div className="mb-3 text-3xl">{f.icon}</div>
-                <h3 className="mb-1 text-base font-bold text-gray-900 dark:text-white">
-                  {f.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                <h3 className="mb-1 text-base font-bold text-gray-900">{f.title}</h3>
+                <p className="text-sm leading-relaxed text-gray-600">
                   {f.description}
                 </p>
               </div>
@@ -199,20 +201,22 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="mt-auto border-t border-gray-200 bg-white px-6 py-8 text-center dark:border-gray-800 dark:bg-gray-900">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+      <footer className="mt-auto border-t border-gray-200 bg-white px-6 py-8 text-center">
+        <p className="container mx-auto text-sm text-gray-500">
           Built as a portfolio project ·{" "}
           <a
-            href="https://github.com/your-username/pokedex-nextjs"
+            href="https://github.com/vinicius-o-souza/pokedex-nextjs"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-red-600 transition hover:text-red-700 dark:text-red-400"
+            className="font-medium text-gray-700 underline underline-offset-2 transition hover:text-gray-900"
           >
             View on GitHub ↗
           </a>
         </p>
-        <p className="mt-1 text-xs text-gray-400 dark:text-gray-600">
+        <p className="mt-1 text-xs text-gray-400">
           Pokémon and all related names are trademarks of Nintendo / Game Freak.
+        </p>
+        <p className="mt-1 text-xs text-gray-400">
           This project is not affiliated with or endorsed by Nintendo.
         </p>
       </footer>

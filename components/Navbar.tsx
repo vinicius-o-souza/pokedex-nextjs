@@ -1,180 +1,145 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+const NAV_LINKS = [
+  { href: "/", label: "Home", protected: false },
+  { href: "/pokedex", label: "Pokedex", protected: true },
+];
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  const [dark, setDark] = useState(false);
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // Initialise dark mode from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = stored ? stored === "dark" : prefersDark;
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
-
-  function toggleDark() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  }
 
   const isAuthenticated = status === "authenticated" && !!session;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur dark:border-gray-700 dark:bg-gray-900/80">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="container mx-auto flex max-w-8xl flex items-center justify-between px-4 py-4 lg:px-8">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-xl font-bold text-red-600 dark:text-red-400"
-        >
-          {/* Pokéball icon */}
-          <span className="text-2xl" aria-hidden="true">
-            ◉
-          </span>
-          Pokédex
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.svg" alt="Pokédex" width={120} height={44} priority />
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-4 sm:flex">
-          <DarkToggle dark={dark} onToggle={toggleDark} />
+        <div className="hidden items-center gap-6 lg:flex">
+          {NAV_LINKS.filter((l) => !l.protected || isAuthenticated).map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow ${
+                pathname === link.href
+                  ? "bg-brand-yellow"
+                  : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+
           {isAuthenticated ? (
-            <>
-              <Link
-                href="/pokedex"
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-              >
-                Pokédex
-              </Link>
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
-              >
-                Logout
-              </button>
-            </>
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="rounded-full bg-brand-yellow px-5 py-2 text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
+            >
+              Logout
+            </button>
           ) : (
-            <>
+            <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                className={`rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow ${
+                  pathname === "/login"
+                    ? "bg-brand-yellow"
+                    : ""
+                }`}
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                className={`rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow ${
+                  pathname === "/register"
+                    ? "bg-brand-yellow"
+                    : ""
+                }`}
               >
                 Register
               </Link>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Mobile: dark toggle + hamburger */}
-        <div className="flex items-center gap-2 sm:hidden">
-          <DarkToggle dark={dark} onToggle={toggleDark} />
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-            className="rounded-md p-2 text-gray-600 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-          >
-            {menuOpen ? (
-              /* X icon */
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              /* Hamburger icon */
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle menu"
+          className="rounded-md p-2 text-gray-600 transition hover:bg-gray-100 lg:hidden"
+        >
+          {menuOpen ? (
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-gray-200 bg-white px-4 pb-4 pt-2 dark:border-gray-700 dark:bg-gray-900 sm:hidden">
-          {isAuthenticated ? (
-            <div className="flex flex-col gap-2">
+        <div className="border-t border-gray-100 bg-white px-4 pb-6 pt-4 lg:hidden">
+          <div className="flex flex-col gap-1">
+            {NAV_LINKS.filter((l) => !l.protected || isAuthenticated).map((link) => (
               <Link
-                href="/pokedex"
+                key={link.href}
+                href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                className={`rounded-lg px-4 py-3 text-base font-medium transition hover:bg-gray-50 ${
+                  pathname === link.href ? "text-brand-yellow-dark" : "text-gray-700"
+                }`}
               >
-                Pokédex
+                {link.label}
               </Link>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  signOut({ callbackUrl: "/" });
-                }}
-                className="rounded-md bg-red-600 px-3 py-2 text-left text-sm font-medium text-white hover:bg-red-700"
-              >
-                Logout
-              </button>
+            ))}
+
+            <div className="mt-3 border-t border-gray-100 pt-3">
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }); }}
+                  className="w-full rounded-full bg-brand-yellow px-5 py-3 text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
+                >
+                  Logout
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-full bg-brand-yellow px-5 py-3 text-center text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <Link
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMenuOpen(false)}
-                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
-              >
-                Register
-              </Link>
-            </div>
-          )}
+          </div>
         </div>
       )}
     </nav>
-  );
-}
-
-function DarkToggle({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={onToggle}
-      aria-label="Toggle dark mode"
-      className="rounded-md p-2 text-gray-600 transition hover:bg-gray-100 dark:text-yellow-300 dark:hover:bg-gray-800"
-    >
-      {dark ? (
-        /* Sun icon */
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
-          />
-        </svg>
-      ) : (
-        /* Moon icon */
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-          />
-        </svg>
-      )}
-    </button>
   );
 }
