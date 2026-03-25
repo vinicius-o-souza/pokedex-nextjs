@@ -64,7 +64,6 @@ const authOptions: NextAuthOptions = {
             email: credentials.email,
             // Pass token fields through; they will be picked up in the `jwt`
             // callback below via the `user` object.
-            // @ts-expect-error — extra fields on User are forwarded to jwt callback
             accessToken: token.access_token,
             refreshToken: token.refresh_token,
             expiresAt: toExpiresAt(token.expires_in),

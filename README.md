@@ -76,25 +76,30 @@ cp .env.local.example .env.local
 
 ## Running Locally
 
-### Without Docker
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v18 or later (install via [nvm](https://github.com/nvm-sh/nvm) is recommended)
+- A running Drupal instance configured as described above
+
+### Installation
 
 ```bash
-# Install dependencies
+# 1. Clone the repository
+git clone https://github.com/your-username/pokedex-nextjs.git
+cd pokedex-nextjs
+
+# 2. Install dependencies
 npm install
 
-# Start development server
-npm run dev
+# 3. Set up environment variables
+cp .env.local.example .env.local
+# Edit .env.local and fill in your Drupal and NextAuth values
 ```
 
-### With Docker
+### Development
 
 ```bash
-# Development server with hot reload
-docker compose up
-
-# Run any npm command one-off
-docker compose run --rm app npm run lint
-docker compose run --rm app npm install <package>
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -102,11 +107,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Production Build
 
 ```bash
-# Without Docker
 npm run build
 npm start
-
-# With Docker
-docker build --target prod -t pokedex .
-docker run -p 3000:3000 --env-file .env.local pokedex
 ```
