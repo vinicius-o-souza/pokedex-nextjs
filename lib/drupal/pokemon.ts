@@ -4,34 +4,15 @@ import type {
   PokemonListItem,
   PokemonType,
   PaginatedResponse,
+  JsonApiListResponse,
+  JsonApiResourceAttributes,
+  JsonApiIncludedTerm,
 } from "@/types/pokemon";
 
-/**
- * Drupal REST endpoint conventions used by this module
- * -------------------------------------------------------
- * All endpoints live under /api/pokemon (adjust to match your Drupal
- * Views REST Export or custom REST resource paths).
- *
- * GET /api/pokemon
- *   Query params:
- *     page       – 0-based page index (default 0)
- *     page_size  – items per page    (default 20)
- *     type       – filter by type name, e.g. "fire"
- *     search     – partial name search string
- *   Returns: PaginatedResponse<PokemonListItem>
- *     {
- *       data: [ { id, name, image, types[] }, ... ],
- *       total: 151,
- *       page: 0,
- *       pageSize: 20
- *     }
- *
- * GET /api/pokemon/:id
- *   Returns: full Pokemon entity matching the Pokemon interface.
- *
- * GET /api/pokemon/types
- *   Returns: PokemonType[]  e.g. [ { id: 1, name: "normal" }, ... ]
- */
+interface PokemonTypeAttributes extends JsonApiResourceAttributes {
+  drupal_internal__tid: number;
+  name: string;
+}
 
 export interface GetPokemonListParams {
   page?: number;
@@ -40,51 +21,96 @@ export interface GetPokemonListParams {
   search?: string;
 }
 
-/**
- * Fetch a paginated list of Pokémon, optionally filtered by type and/or name.
- *
- * @param token  - Bearer access token obtained via fetchAccessToken.
- * @param params - Pagination and filter options.
- */
-export async function getPokemonList(
-  token: string,
-  { page = 0, pageSize = 20, type, search }: GetPokemonListParams = {},
-): Promise<PaginatedResponse<PokemonListItem>> {
-  const query = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
-  });
+interface PokemonNodeAttributes extends JsonApiResourceAttributes {
+  title: string;
+  drupal_internal__nid: number;
+  field_pokeapi_id: number;
+  field_pokemon_order: number;
+  field_pokemon_legendary: boolean;
+  field_pokemon_mythical: boolean;
+  field_pokemon_experience: number;
+  field_pokemon_height: string;
+  field_pokemon_weight: string;
+  field_description: string | null;
+}
 
-  if (type) query.set("type", type);
-  if (search) query.set("search", search);
+// Extends the base list response to include the ?include=field_pokemon_types sideload
+interface PokemonListApiResponse extends JsonApiListResponse<PokemonNodeAttributes> {
+  included?: JsonApiIncludedTerm[];
+}
 
-  return drupalFetch<PaginatedResponse<PokemonListItem>>(
-    `/api/pokemon?${query.toString()}`,
-    { token },
-  );
+function mapToPokemonListItem(
+  resource: JsonApiListResponse<PokemonNodeAttributes>["data"][number],
+  includedTerms: Map<string, string>,
+): PokemonListItem {
+  const typeRefs = resource.relationships?.field_pokemon_types?.data;
+  const typeIds = Array.isArray(typeRefs) ? typeRefs.map((r) => r.id) : [];
+  const types = typeIds.map((id) => includedTerms.get(id) ?? id);
+
+  return {
+    id: resource.attributes.field_pokeapi_id,
+    name: resource.attributes.title,
+    image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${resource.attributes.field_pokeapi_id}.png`,
+    types,
+  };
 }
 
 /**
- * Fetch the full detail record for a single Pokémon by its ID.
- *
- * @param token - Bearer access token.
- * @param id    - The Pokémon's numeric or UUID identifier as a string.
+ * Fetch a paginated list of Pokémon from the Drupal JSON:API.
+ * Type names are resolved via ?include=field_pokemon_types.
+ */
+export async function getPokemonList(
+  token: string,
+  { page = 0, pageSize = 20 }: GetPokemonListParams = {},
+): Promise<PaginatedResponse<PokemonListItem>> {
+  const query = new URLSearchParams({
+    "page[limit]": String(pageSize),
+    "page[offset]": String(page * pageSize),
+    include: "field_pokemon_types",
+  });
+
+  const response = await drupalFetch<PokemonListApiResponse>(
+    `/jsonapi/node/pokemon?${query.toString()}`,
+    { token },
+  );
+
+  // Build a UUID → name map from the included taxonomy terms
+  const includedTerms = new Map<string, string>();
+  for (const term of response.included ?? []) {
+    if (term.type === "taxonomy_term--pokemon_type") {
+      includedTerms.set(term.id, term.attributes.name);
+    }
+  }
+
+  return {
+    data: response.data.map((r) => mapToPokemonListItem(r, includedTerms)),
+    total: response.meta.count,
+    page,
+    pageSize,
+  };
+}
+
+/**
+ * Fetch the full detail record for a single Pokémon by its UUID.
  */
 export async function getPokemonById(
   token: string,
   id: string,
 ): Promise<Pokemon> {
-  return drupalFetch<Pokemon>(`/api/pokemon/${id}`, { token });
+  return drupalFetch<Pokemon>(`/jsonapi/node/pokemon/${id}`, { token });
 }
 
 /**
- * Fetch all available Pokémon types for use in the filter UI.
- *
- * The list is relatively static (18 canonical types), so the caller may
- * want to cache this response at the React Query layer with a long staleTime.
- *
- * @param token - Bearer access token.
+ * Fetch all available Pokémon types.
  */
 export async function getPokemonTypes(token: string): Promise<PokemonType[]> {
-  return drupalFetch<PokemonType[]>("/api/pokemon/types", { token });
+  const response = await drupalFetch<JsonApiListResponse<PokemonTypeAttributes>>(
+    "/jsonapi/taxonomy_term/pokemon_type",
+    { token },
+  );
+
+  return response.data.map((term) => ({
+    id: term.attributes.drupal_internal__tid,
+    name: term.attributes.name,
+  }));
 }

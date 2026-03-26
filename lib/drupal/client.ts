@@ -32,8 +32,11 @@ export async function drupalFetch<T>(
 ): Promise<T> {
   const url = `${DRUPAL_BASE_URL}${path}`;
 
+  const isJsonApi = path.startsWith("/jsonapi/");
+
   const mergedHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
+    "Content-Type": isJsonApi ? "application/vnd.api+json" : "application/json",
+    Accept: isJsonApi ? "application/vnd.api+json" : "application/json",
     ...(headers as Record<string, string>),
   };
 

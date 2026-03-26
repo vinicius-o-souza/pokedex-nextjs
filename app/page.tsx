@@ -84,7 +84,7 @@ export default function HomePage() {
             <h1 className="mb-4 text-5xl font-medium leading-tight text-gray-900 lg:text-7xl">
               Find all your<br />
               favorite<br />
-              <b class="font-extrabold">Pokemon</b>
+              <b className="font-extrabold">Pokemon</b>
             </h1>
             <h2 className="mb-8 text-1xl lg:text-2xl text-gray-700">
               You can know the type of Pokemon, its strengths,

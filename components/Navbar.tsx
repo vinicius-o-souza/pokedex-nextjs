@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -51,16 +51,12 @@ export default function Navbar() {
             </button>
           ) : (
             <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className={`rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow ${
-                  pathname === "/login"
-                    ? "bg-brand-yellow"
-                    : ""
-                }`}
+              <button
+                onClick={() => signIn("drupal")}
+                className="rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow"
               >
                 Login
-              </Link>
+              </button>
               <Link
                 href="/register"
                 className={`rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow ${
@@ -120,13 +116,12 @@ export default function Navbar() {
                 </button>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <Link
-                    href="/login"
-                    onClick={() => setMenuOpen(false)}
-                    className="rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
+                  <button
+                    onClick={() => { setMenuOpen(false); signIn("drupal"); }}
+                    className="rounded-lg px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-50"
                   >
                     Login
-                  </Link>
+                  </button>
                   <Link
                     href="/register"
                     onClick={() => setMenuOpen(false)}
