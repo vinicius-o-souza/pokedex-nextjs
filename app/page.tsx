@@ -1,3 +1,6 @@
+"use client";
+
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -74,6 +77,10 @@ const features = [
 ];
 
 export default function HomePage() {
+  const { data: session, status } = useSession();
+
+  const isAuthenticated = status === "authenticated" && !!session;
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
@@ -97,19 +104,23 @@ export default function HomePage() {
               >
                 See pokemons
               </Link>
-              <Link
-                href="/register"
-                className="rounded-full border-2 border-gray-900/20 px-8 py-3 text-base font-bold text-gray-900 transition hover:bg-black/10 active:scale-95"
-              >
-                Register
-              </Link>
+              { !isAuthenticated ?
+                <Link
+                  href="/register"
+                  className="rounded-full border-2 border-gray-900/20 px-8 py-3 text-base font-bold text-gray-900 transition hover:bg-black/10 active:scale-95"
+                >
+                  Register
+                </Link>
+              : '' }
             </div>
-            <p className="mt-5 text-lg text-gray-600">
-              Already a trainer?{" "}
-              <Link href="/login" className="font-semibold underline underline-offset-2 hover:text-gray-900">
-                Sign in here
-              </Link>
-            </p>
+            { !isAuthenticated ?
+              <p className="mt-5 text-lg text-gray-600">
+                Already a trainer?{" "}
+                <Link href="/login" className="font-semibold underline underline-offset-2 hover:text-gray-900">
+                  Sign in here
+                </Link>
+              </p>
+            : '' }
           </div>
 
           {/* Right: Pokedex */}

@@ -84,14 +84,12 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
   const totalPages = Math.ceil(data.total / data.pageSize);
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="container mx-auto bg-gray-50">
       {/* ── Page header ───────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="px-4 lg:px-8 py-8">
-          <h1 className="text-3xl font-extrabold text-gray-900 lg:text-4xl">
-            <span className="text-brand-yellow-dark">{data.total}</span> Pokémons for you to choose your favorite
-          </h1>
-        </div>
+      <div className="px-4 lg:px-8 py-8">
+        <h1 className="text-3xl font-extrabold text-center text-gray-900 lg:text-4xl">
+          <span className="text-brand-yellow-dark">{data.total}</span> Pokémons for you to choose your favorite
+        </h1>
       </div>
 
       <div className="px-4 lg:px-8 py-6">
