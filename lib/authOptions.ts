@@ -76,9 +76,6 @@ function DrupalProvider(): OAuthConfig<DrupalProfile> {
     },
     checks: ["pkce", "state"],
     clientId: process.env.DRUPAL_CLIENT_ID,
-    client: {
-      token_endpoint_auth_method: "none",
-    },
   };
 }
 
