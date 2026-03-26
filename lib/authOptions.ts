@@ -83,6 +83,7 @@ function DrupalProvider(): OAuthConfig<DrupalProfile> {
 }
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [DrupalProvider()],
 
   session: {
