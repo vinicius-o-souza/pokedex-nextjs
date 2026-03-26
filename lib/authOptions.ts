@@ -22,7 +22,7 @@ function toExpiresAt(expiresIn: number): number {
  * openid-client builds the token request for a public PKCE client.
  */
 function DrupalProvider(): OAuthConfig<DrupalProfile> {
-  const baseUrl = process.env.DRUPAL_BASE_URL!;
+  const baseUrl = process.env.DRUPAL_BASE_URL!.replace(/\/$/, "");
   const tokenUrl = `${baseUrl}/oauth/token`;
 
   return {

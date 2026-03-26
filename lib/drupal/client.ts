@@ -1,4 +1,4 @@
-const DRUPAL_BASE_URL = process.env.DRUPAL_BASE_URL;
+const DRUPAL_BASE_URL = process.env.DRUPAL_BASE_URL?.replace(/\/$/, "");
 
 if (!DRUPAL_BASE_URL) {
   throw new Error("DRUPAL_BASE_URL environment variable is not set.");
