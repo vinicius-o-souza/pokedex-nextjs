@@ -30,7 +30,7 @@ export function TypeFilter({ types, selected, onSelect }: TypeFilterProps) {
         const isSelected = selected === type.name;
         return (
           <button
-            key={type.id}
+            key={type.drupal_internal__tid}
             onClick={() => onSelect(type.name)}
             className={`px-3 py-1 rounded-full text-sm font-medium capitalize transition-all ${
               isSelected
