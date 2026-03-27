@@ -15,11 +15,11 @@ function hpPercent(id: number): number {
 
 export function PokemonCard({ pokemon }: PokemonCardProps) {
   const hp = hpPercent(pokemon.id);
-  const primaryType = pokemon.types[0] ?? "normal";
+  const primaryType = pokemon.types[0]?.name ?? "normal";
   const typeBg = TYPE_COLORS[primaryType]?.bg ?? "bg-stone-400";
 
   return (
-    <Link href={`/pokedex/${pokemon.id}`}>
+    <Link href={`/pokedex/${pokemon.uuid}`}>
       <div className="group relative flex h-44 overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
         {/* Left: info */}
         <div className="flex flex-1 flex-col justify-center gap-2 px-5 py-4 min-w-0">
@@ -33,7 +33,7 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
           {/* Type badges */}
           <div className="flex flex-wrap gap-1.5">
             {pokemon.types.map((type) => (
-              <TypeBadge key={type} type={type.toLowerCase()} />
+              <TypeBadge key={type.drupal_internal__tid} type={type.name.toLowerCase()} />
             ))}
           </div>
 

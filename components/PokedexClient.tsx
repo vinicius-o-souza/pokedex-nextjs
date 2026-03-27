@@ -132,7 +132,7 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-sm text-gray-500">Filtering by:</span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-yellow px-3 py-1 text-xs font-bold capitalize text-gray-900">
-                  {selectedType}
+                  {types.find((t) => String(t.drupal_internal__tid) === selectedType)?.name ?? selectedType}
                   <button onClick={clearFilters} className="hover:text-red-600">×</button>
                 </span>
               </div>
@@ -225,13 +225,13 @@ function FilterPanel({ types, selectedTypes, onTypeToggle, onClear }: FilterPane
       </div>
       <div className="grid grid-cols-2 gap-x-2 gap-y-2">
         {types.map((type) => {
-          const checked = selectedTypes.includes(type.name);
+          const checked = selectedTypes.includes(String(type.drupal_internal__tid));
           return (
-            <label key={type.id} className="flex cursor-pointer items-center gap-2">
+            <label key={type.drupal_internal__tid} className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={checked}
-                onChange={() => onTypeToggle(type.name)}
+                onChange={() => onTypeToggle(String(type.drupal_internal__tid))}
                 className="h-3.5 w-3.5 rounded accent-brand-yellow cursor-pointer"
               />
               <span className="text-xs capitalize text-gray-700">{type.name}</span>

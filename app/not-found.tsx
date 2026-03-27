@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-brand-red px-6 py-16 text-white">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-brand-red px-6 py-16 text-gray-900">
       <div className="flex flex-col items-center text-center">
         {/* Team Rocket illustration */}
         <div className="mb-6 w-48 sm:w-64">
@@ -21,13 +21,13 @@ export default function NotFound() {
           404
         </h1>
 
-        <p className="mb-8 max-w-xs text-lg font-medium text-white/90 sm:text-xl">
+        <p className="mb-8 max-w-xs text-lg font-medium sm:text-xl ">
           The rocket team has won this time.
         </p>
 
         <Link
           href="/"
-          className="rounded-full bg-white px-8 py-3 text-base font-bold text-brand-red transition hover:bg-gray-100 active:scale-95"
+          className="rounded-full px-5 py-2 text-md font-bold transition text-gray-900 hover:bg-brand-yellow-dark bg-brand-yellow"
         >
           Return
         </Link>

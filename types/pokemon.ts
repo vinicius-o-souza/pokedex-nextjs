@@ -1,8 +1,10 @@
 export interface PokemonListItem {
+  uuid: string;
+  drupal_internal__nid: number;
   id: number;
   name: string;
   image: string;
-  types: string[];
+  types: PokemonType[];
 }
 
 export interface PokemonStat {
@@ -40,7 +42,7 @@ export interface Pokemon {
 }
 
 export interface PokemonType {
-  id: number;
+  drupal_internal__tid: number;
   name: string;
 }
 

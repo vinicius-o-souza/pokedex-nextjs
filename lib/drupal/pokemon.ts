@@ -6,7 +6,6 @@ import type {
   PaginatedResponse,
   JsonApiListResponse,
   JsonApiResourceAttributes,
-  JsonApiIncludedTerm,
 } from "@/types/pokemon";
 
 interface PokemonTypeAttributes extends JsonApiResourceAttributes {
@@ -34,20 +33,25 @@ interface PokemonNodeAttributes extends JsonApiResourceAttributes {
   field_description: string | null;
 }
 
-// Extends the base list response to include the ?include=field_pokemon_types sideload
-interface PokemonListApiResponse extends JsonApiListResponse<PokemonNodeAttributes> {
-  included?: JsonApiIncludedTerm[];
-}
+type PokemonListApiResponse = JsonApiListResponse<PokemonNodeAttributes>;
 
 function mapToPokemonListItem(
   resource: JsonApiListResponse<PokemonNodeAttributes>["data"][number],
-  includedTerms: Map<string, string>,
+  typeNames: Map<number, string>,
 ): PokemonListItem {
   const typeRefs = resource.relationships?.field_pokemon_types?.data;
-  const typeIds = Array.isArray(typeRefs) ? typeRefs.map((r) => r.id) : [];
-  const types = typeIds.map((id) => includedTerms.get(id) ?? id);
+  const typeArray = Array.isArray(typeRefs) ? typeRefs : [];
+  const types = typeArray.map((r) => {
+    const tid = r.meta?.drupal_internal__target_id ?? 0;
+    return {
+      drupal_internal__tid: tid,
+      name: typeNames.get(tid) ?? "",
+    };
+  });
 
   return {
+    uuid: resource.id,
+    drupal_internal__nid: resource.attributes.drupal_internal__nid,
     id: resource.attributes.field_pokeapi_id,
     name: resource.attributes.title,
     image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${resource.attributes.field_pokeapi_id}.png`,
@@ -57,33 +61,30 @@ function mapToPokemonListItem(
 
 /**
  * Fetch a paginated list of Pokémon from the Drupal JSON:API.
- * Type names are resolved via ?include=field_pokemon_types.
+ * Type names are resolved via ?filter[field_pokemon_types.meta.drupal_internal__target_id]=TID.
  */
 export async function getPokemonList(
   token: string,
-  { page = 0, pageSize = 20 }: GetPokemonListParams = {},
+  { page = 0, pageSize = 20, type }: GetPokemonListParams = {},
 ): Promise<PaginatedResponse<PokemonListItem>> {
   const query = new URLSearchParams({
     "page[limit]": String(pageSize),
     "page[offset]": String(page * pageSize),
-    include: "field_pokemon_types",
   });
 
-  const response = await drupalFetch<PokemonListApiResponse>(
-    `/jsonapi/node/pokemon?${query.toString()}`,
-    { token },
-  );
-
-  // Build a UUID → name map from the included taxonomy terms
-  const includedTerms = new Map<string, string>();
-  for (const term of response.included ?? []) {
-    if (term.type === "taxonomy_term--pokemon_type") {
-      includedTerms.set(term.id, term.attributes.name);
-    }
+  if (type) {
+    query.set("filter[field_pokemon_types.meta.drupal_internal__target_id]", type);
   }
 
+  const [response, types] = await Promise.all([
+    drupalFetch<PokemonListApiResponse>(`/jsonapi/node/pokemon?${query.toString()}`, { token }),
+    getPokemonTypes(token),
+  ]);
+
+  const typeNames = new Map(types.map((t) => [t.drupal_internal__tid, t.name]));
+
   return {
-    data: response.data.map((r) => mapToPokemonListItem(r, includedTerms)),
+    data: response.data.map((r) => mapToPokemonListItem(r, typeNames)),
     total: response.meta.count,
     page,
     pageSize,
@@ -93,11 +94,11 @@ export async function getPokemonList(
 /**
  * Fetch the full detail record for a single Pokémon by its UUID.
  */
-export async function getPokemonById(
+export async function getPokemonByUuid(
   token: string,
-  id: string,
+  uuid: string,
 ): Promise<Pokemon> {
-  return drupalFetch<Pokemon>(`/jsonapi/node/pokemon/${id}`, { token });
+  return drupalFetch<Pokemon>(`/jsonapi/node/pokemon/${uuid}`, { token });
 }
 
 /**
@@ -110,7 +111,7 @@ export async function getPokemonTypes(token: string): Promise<PokemonType[]> {
   );
 
   return response.data.map((term) => ({
-    id: term.attributes.drupal_internal__tid,
+    drupal_internal__tid: term.attributes.drupal_internal__tid,
     name: term.attributes.name,
   }));
 }

@@ -45,7 +45,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="rounded-full bg-brand-yellow px-5 py-2 text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
+              className="rounded-full px-5 py-2 text-md font-bold text-gray-900 transition hover:bg-brand-yellow"
             >
               Logout
             </button>
@@ -110,7 +110,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <button
                   onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }); }}
-                  className="w-full rounded-full bg-brand-yellow px-5 py-3 text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
+                  className="w-full rounded-full px-5 py-3 text-md font-bold text-gray-900 transition hover:bg-brand-yellow-dark"
                 >
                   Logout
                 </button>
