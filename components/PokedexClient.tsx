@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   PaginatedResponse,
   PokemonListItem,
@@ -21,6 +22,7 @@ interface PokedexClientProps {
 const PAGE_SIZE = 20;
 
 export function PokedexClient({ initialData, types, generations }: PokedexClientProps) {
+  const router = useRouter();
   const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -52,7 +54,10 @@ export function PokedexClient({ initialData, types, generations }: PokedexClient
 
       const res = await fetch(`/api/pokemon?${params.toString()}`);
       if (!res.ok) {
-        if (res.status === 401) throw new Error("Session expired. Please log in again.");
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
         throw new Error("Failed to load Pokémon.");
       }
       const json: PaginatedResponse<PokemonListItem> = await res.json();
@@ -62,7 +67,7 @@ export function PokedexClient({ initialData, types, generations }: PokedexClient
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (isFirstRender.current) {

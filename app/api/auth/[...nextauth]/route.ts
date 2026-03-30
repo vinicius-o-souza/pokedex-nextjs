@@ -10,6 +10,8 @@ declare module "next-auth" {
   interface Session {
     /** Drupal OAuth2 access token, ready to pass as a Bearer header. */
     accessToken: string;
+    /** Set to "RefreshAccessTokenError" when the refresh token exchange fails. */
+    error?: string;
   }
 }
 
@@ -19,6 +21,7 @@ declare module "next-auth/jwt" {
     refreshToken: string;
     /** Unix timestamp (seconds) at which the access token expires. */
     expiresAt: number;
+    error?: string;
   }
 }
 

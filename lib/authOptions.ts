@@ -42,13 +42,14 @@ function DrupalProvider(): OAuthConfig<DrupalProfile> {
       }: {
         checks: { code_verifier?: string };
         params: { code?: string };
-        provider: { callbackUrl: string; clientId?: string };
+        provider: { callbackUrl: string; clientId?: string; clientSecret?: string };
       }) {
         const body = new URLSearchParams({
           grant_type: "authorization_code",
           code: params.code!,
           redirect_uri: provider.callbackUrl,
-          client_id: provider.clientId!
+          client_id: provider.clientId!,
+          ...(provider.clientSecret && { client_secret: provider.clientSecret }),
         });
 
         if (checks.code_verifier) {
@@ -76,6 +77,7 @@ function DrupalProvider(): OAuthConfig<DrupalProfile> {
     },
     checks: ["pkce", "state"],
     clientId: process.env.DRUPAL_CLIENT_ID,
+    clientSecret: process.env.DRUPAL_CLIENT_SECRET,
   };
 }
 
@@ -121,6 +123,9 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       session.accessToken = token.accessToken;
+      if (token.error) {
+        session.error = token.error;
+      }
       return session;
     },
   },

@@ -6,7 +6,7 @@ import { getPokemonList } from "@/lib/drupal/pokemon";
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || session.error) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
