@@ -52,7 +52,7 @@ function LoginContent() {
           <p className="mt-6 text-center text-sm text-gray-500">
             New trainer?{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_DRUPAL_BASE_URL}/user/register`}
+              href="/register"
               className="font-semibold text-gray-900 underline underline-offset-2 hover:text-brand-yellow-dark"
             >
               Create an account

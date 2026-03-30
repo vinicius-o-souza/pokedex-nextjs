@@ -143,12 +143,6 @@ export default function HomePage() {
           <p className="text-center text-sm font-medium text-gray-400 lg:text-left">
             Beware of Team Rocket — they&apos;re always watching.
           </p>
-          <Link
-            href="/legendarios"
-            className="rounded-full border border-gray-600 px-5 py-2 text-sm font-semibold text-gray-300 transition hover:border-brand-yellow hover:text-brand-yellow"
-          >
-            View Legendaries →
-          </Link>
         </div>
       </section>
 
