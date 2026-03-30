@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/authOptions";
-import { getPokemonList, getPokemonTypes } from "@/lib/drupal/pokemon";
+import { getPokemonList, getPokemonTypes, getPokemonGenerations } from "@/lib/drupal/pokemon";
 import { PokedexClient } from "@/components/PokedexClient";
 
 export const metadata = {
@@ -16,10 +16,11 @@ export default async function PokedexPage() {
     redirect("/login");
   }
 
-  const [initialData, types] = await Promise.all([
+  const [initialData, types, generations] = await Promise.all([
     getPokemonList(session.accessToken, { page: 0, pageSize: 20 }),
     getPokemonTypes(session.accessToken),
+    getPokemonGenerations(session.accessToken),
   ]);
 
-  return <PokedexClient initialData={initialData} types={types} />;
+  return <PokedexClient initialData={initialData} types={types} generations={generations} />;
 }

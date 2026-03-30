@@ -14,7 +14,7 @@ export default function RegisterPage() {
           height={300}
           className="drop-shadow-xl"
         />
-        <h2 className="mt-8 max-w-xs text-center text-sm font-medium text-gray-700">
+        <h2 className="mt-8 max-w-xs text-center text-lg font-medium text-gray-700">
           Create your account and start discovering all your favorite Pokémon.
         </h2>
       </div>

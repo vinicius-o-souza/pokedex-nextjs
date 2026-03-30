@@ -14,14 +14,20 @@ export async function GET(request: NextRequest) {
   const page = Number(searchParams.get("page") ?? "0");
   const pageSize = Number(searchParams.get("pageSize") ?? "20");
   const type = searchParams.get("type") ?? undefined;
+  const generation = searchParams.get("generation") ?? undefined;
   const search = searchParams.get("search") ?? undefined;
+  const legendary = searchParams.get("legendary") === "true" ? true : undefined;
+  const mythical = searchParams.get("mythical") === "true" ? true : undefined;
 
   try {
     const data = await getPokemonList(session.accessToken, {
       page,
       pageSize,
       type,
+      generation,
       search,
+      legendary,
+      mythical,
     });
     return NextResponse.json(data);
   } catch (err) {

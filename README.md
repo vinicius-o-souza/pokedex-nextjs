@@ -6,12 +6,34 @@ A Pokédex portfolio project built with Next.js 14 App Router, TypeScript, Tailw
 
 This project displays a full Pokédex sourced from a Drupal headless CMS via its REST API and OAuth 2.0 authentication. It supports browsing, filtering, and viewing detailed Pokémon pages including stats, abilities, and evolution chains.
 
-**Stack:**
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- TanStack Query (React Query v5)
-- NextAuth.js v4 (OAuth 2.0 client credentials flow against Drupal)
+---
+
+## Built with
+
+| Layer | Technology |
+|---|---|
+| Framework | [Next.js 14](https://nextjs.org/) — App Router, Server & Client Components |
+| Language | [TypeScript 5](https://www.typescriptlang.org/) |
+| Styling | [Tailwind CSS 3](https://tailwindcss.com/) |
+| Authentication | [NextAuth.js v4](https://next-auth.js.org/) — OAuth 2.0 client credentials flow |
+| CMS / Backend | [Drupal](https://www.drupal.org/) — headless, exposing REST API + JSON:API |
+| Data fetching | Native `fetch` with a typed wrapper (`drupalFetch`) + `useEffect`-based client pagination |
+| Images | `next/image` with built-in optimisation |
+| Font | Montserrat via `next/font/google` |
+| Analytics | [Vercel Analytics](https://vercel.com/analytics) + [Speed Insights](https://vercel.com/docs/speed-insights) |
+
+---
+
+## What this project demonstrates
+
+- **Server Components for auth-gated data fetching** — pages fetch data and verify the session on the server before rendering; unauthenticated requests are redirected without a client-side round-trip.
+- **Hybrid rendering strategy** — the Pokédex list is server-rendered on first load for instant content, then transitions to client-side fetch for pagination and filtering without a full page reload.
+- **Drupal as a headless CMS** — consumes both the Drupal REST API (list endpoints) and JSON:API (detail endpoints with `?include=` relationships), demonstrating how to integrate a decoupled CMS with a modern frontend.
+- **OAuth 2.0 machine-to-machine flow** — the Next.js backend exchanges client credentials with Drupal's Simple OAuth server and forwards the bearer token on every API call, keeping secrets out of the browser.
+- **Type-safe API layer** — a single `drupalFetch<T>` wrapper handles auth headers, content-type negotiation, and structured error handling (`DrupalApiError`) so every caller gets a fully typed response.
+- **Composable filter UX** — type, generation, legendary, and mythical filters combine with a search bar and server-side pagination, reset to page 1 on any change, and surface errors inline.
+- **Responsive layout with a mobile drawer** — desktop shows a persistent filter sidebar; mobile replaces it with a slide-in overlay, sharing the same `FilterPanel` component.
+- **Pokémon detail page with adjacent navigation** — fetches previous/next UUIDs in parallel (`Promise.all`) and renders a type-coloured header, stat bars, ability list, and a full evolution chain.
 
 ---
 

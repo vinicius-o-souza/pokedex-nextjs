@@ -8,13 +8,7 @@ interface PokemonCardProps {
   pokemon: PokemonListItem;
 }
 
-/** Deterministic HP % (45–100) derived from pokemon id so it looks consistent. */
-function hpPercent(id: number): number {
-  return 45 + (id * 37) % 56;
-}
-
 export function PokemonCard({ pokemon }: PokemonCardProps) {
-  const hp = hpPercent(pokemon.id);
   const primaryType = pokemon.types[0]?.name ?? "normal";
   const typeBg = TYPE_COLORS[primaryType]?.bg ?? "bg-stone-400";
 
@@ -35,20 +29,6 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
             {pokemon.types.map((type) => (
               <TypeBadge key={type.drupal_internal__tid} type={type.name.toLowerCase()} />
             ))}
-          </div>
-
-          {/* HP bar */}
-          <div className="mt-1">
-            <div className="mb-1 flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">HP</span>
-              <span className="text-xs text-gray-400">{hp}</span>
-            </div>
-            <div className="h-2.5 w-full rounded-full bg-gray-100">
-              <div
-                className="h-2.5 rounded-full bg-brand-green transition-all"
-                style={{ width: `${hp}%` }}
-              />
-            </div>
           </div>
         </div>
 

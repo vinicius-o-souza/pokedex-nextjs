@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { encode } from "next-auth/jwt";
+import { encode, type JWT } from "next-auth/jwt";
 
 function base64url(data: Uint8Array): string {
   return Buffer.from(data)
@@ -59,8 +59,8 @@ export async function GET() {
   // encode() uses HKDF(secret, cookieName) as the AES-GCM key and wraps
   // { value: rawValue } as the payload — matching exactly what checks.js reads.
   const [encryptedState, encryptedVerifier] = await Promise.all([
-    encode({ token: { value: state }, secret, maxAge, salt: stateCookieName }),
-    encode({ token: { value: codeVerifier }, secret, maxAge, salt: pkceCookieName }),
+    encode({ token: { value: state } as unknown as JWT, secret, maxAge, salt: stateCookieName }),
+    encode({ token: { value: codeVerifier } as unknown as JWT, secret, maxAge, salt: pkceCookieName }),
   ]);
 
   const oauthParams = new URLSearchParams({
@@ -76,9 +76,11 @@ export async function GET() {
   const destination = `/oauth/authorize?${encodeURIComponent(oauthParams.toString())}`;
   const registerUrl = `${drupalBase}/user/register?destination=${destination}`;
 
+  // SameSite=none is required for cookies to survive the cross-site redirect
+  // from Drupal back to the NextAuth callback. Requires Secure on HTTPS.
   const sharedOpts = {
     httpOnly: true,
-    sameSite: "lax" as const,
+    sameSite: (useSecureCookies ? "none" : "lax") as "none" | "lax",
     path: "/",
     secure: useSecureCookies,
   };

@@ -5,6 +5,7 @@ import type {
   PaginatedResponse,
   PokemonListItem,
   PokemonType,
+  PokemonGeneration,
 } from "@/types/pokemon";
 import { SearchBar } from "@/components/SearchBar";
 import { PokemonCard } from "@/components/PokemonCard";
@@ -14,14 +15,18 @@ import { Pagination } from "@/components/Pagination";
 interface PokedexClientProps {
   initialData: PaginatedResponse<PokemonListItem>;
   types: PokemonType[];
+  generations: PokemonGeneration[];
 }
 
 const PAGE_SIZE = 20;
 
-export function PokedexClient({ initialData, types }: PokedexClientProps) {
+export function PokedexClient({ initialData, types, generations }: PokedexClientProps) {
   const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedGeneration, setSelectedGeneration] = useState("");
+  const [legendary, setLegendary] = useState(false);
+  const [mythical, setMythical] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
 
   const selectedType = selectedTypes[0] ?? "";
 
-  const fetchPokemon = useCallback(async (page: number, type: string, query: string) => {
+  const fetchPokemon = useCallback(async (page: number, type: string, generation: string, query: string, isLegendary: boolean, isMythical: boolean) => {
     setLoading(true);
     setError(null);
     try {
@@ -41,6 +46,9 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
       });
       if (query) params.set("search", query);
       if (type) params.set("type", type);
+      if (generation) params.set("generation", generation);
+      if (isLegendary) params.set("legendary", "true");
+      if (isMythical) params.set("mythical", "true");
 
       const res = await fetch(`/api/pokemon?${params.toString()}`);
       if (!res.ok) {
@@ -61,8 +69,8 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
       isFirstRender.current = false;
       return;
     }
-    fetchPokemon(currentPage, selectedType, search);
-  }, [currentPage, selectedType, search, fetchPokemon]);
+    fetchPokemon(currentPage, selectedType, selectedGeneration, search, legendary, mythical);
+  }, [currentPage, selectedType, selectedGeneration, search, legendary, mythical, fetchPokemon]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -76,8 +84,28 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
     setCurrentPage(1);
   };
 
+  const handleLegendaryToggle = () => {
+    setLegendary((prev) => !prev);
+    setMythical(false);
+    setCurrentPage(1);
+  };
+
+  const handleMythicalToggle = () => {
+    setMythical((prev) => !prev);
+    setLegendary(false);
+    setCurrentPage(1);
+  };
+
+  const handleGenerationSelect = (tid: string) => {
+    setSelectedGeneration((prev) => (prev === tid ? "" : tid));
+    setCurrentPage(1);
+  };
+
   const clearFilters = () => {
     setSelectedTypes([]);
+    setSelectedGeneration("");
+    setLegendary(false);
+    setMythical(false);
     setCurrentPage(1);
   };
 
@@ -100,6 +128,13 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
               types={types}
               selectedTypes={selectedTypes}
               onTypeToggle={handleTypeToggle}
+              generations={generations}
+              selectedGeneration={selectedGeneration}
+              onGenerationSelect={handleGenerationSelect}
+              legendary={legendary}
+              mythical={mythical}
+              onLegendaryToggle={handleLegendaryToggle}
+              onMythicalToggle={handleMythicalToggle}
               onClear={clearFilters}
             />
           </aside>
@@ -113,7 +148,7 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
               </div>
               <button
                 onClick={() => setFilterOpen(true)}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 lg:hidden"
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 lg:hidden"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M6 8h12M10 12h4" />
@@ -194,6 +229,13 @@ export function PokedexClient({ initialData, types }: PokedexClientProps) {
                 types={types}
                 selectedTypes={selectedTypes}
                 onTypeToggle={(t) => { handleTypeToggle(t); }}
+                generations={generations}
+                selectedGeneration={selectedGeneration}
+                onGenerationSelect={handleGenerationSelect}
+                legendary={legendary}
+                mythical={mythical}
+                onLegendaryToggle={handleLegendaryToggle}
+                onMythicalToggle={handleMythicalToggle}
                 onClear={clearFilters}
               />
             </div>
@@ -209,35 +251,93 @@ interface FilterPanelProps {
   types: PokemonType[];
   selectedTypes: string[];
   onTypeToggle: (type: string) => void;
+  generations: PokemonGeneration[];
+  selectedGeneration: string;
+  onGenerationSelect: (tid: string) => void;
+  legendary: boolean;
+  mythical: boolean;
+  onLegendaryToggle: () => void;
+  onMythicalToggle: () => void;
   onClear: () => void;
 }
 
-function FilterPanel({ types, selectedTypes, onTypeToggle, onClear }: FilterPanelProps) {
+function FilterPanel({ types, selectedTypes, onTypeToggle, generations, selectedGeneration, onGenerationSelect, legendary, mythical, onLegendaryToggle, onMythicalToggle, onClear }: FilterPanelProps) {
+  const hasActiveFilters = selectedTypes.length > 0 || !!selectedGeneration || legendary || mythical;
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-100">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-bold text-gray-900">Type</h3>
-        {selectedTypes.length > 0 && (
-          <button onClick={onClear} className="text-xs text-brand-yellow-dark hover:underline font-medium">
-            Clear
-          </button>
-        )}
+    <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-100 space-y-5">
+      {/* Special filters */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-bold text-gray-900">Special</h3>
+          {hasActiveFilters && (
+            <button onClick={onClear} className="text-xs text-brand-yellow-dark hover:underline font-medium">
+              Clear all
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              checked={legendary}
+              onChange={onLegendaryToggle}
+              className="h-3.5 w-3.5 rounded accent-brand-yellow cursor-pointer"
+            />
+            <span className="text-xs text-gray-700">Legendary</span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="checkbox"
+              checked={mythical}
+              onChange={onMythicalToggle}
+              className="h-3.5 w-3.5 rounded accent-brand-yellow cursor-pointer"
+            />
+            <span className="text-xs text-gray-700">Mythical</span>
+          </label>
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-        {types.map((type) => {
-          const checked = selectedTypes.includes(String(type.drupal_internal__tid));
-          return (
-            <label key={type.drupal_internal__tid} className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => onTypeToggle(String(type.drupal_internal__tid))}
-                className="h-3.5 w-3.5 rounded accent-brand-yellow cursor-pointer"
-              />
-              <span className="text-xs capitalize text-gray-700">{type.name}</span>
-            </label>
-          );
-        })}
+
+      {/* Generation filters */}
+      <div>
+        <h3 className="mb-3 font-bold text-gray-900">Generation</h3>
+        <div className="flex flex-col gap-2">
+          {generations.map((gen) => {
+            const tid = String(gen.drupal_internal__tid);
+            return (
+              <label key={tid} className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="radio"
+                  name="generation"
+                  checked={selectedGeneration === tid}
+                  onChange={() => onGenerationSelect(tid)}
+                  className="h-3.5 w-3.5 accent-brand-yellow cursor-pointer"
+                />
+                <span className="text-xs capitalize text-gray-700">{gen.name.replace("Generation-", "Gen ").toUpperCase()}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Type filters */}
+      <div>
+        <h3 className="mb-3 font-bold text-gray-900">Type</h3>
+        <div className="grid grid-cols-2 gap-x-2 gap-y-2">
+          {types.map((type) => {
+            const checked = selectedTypes.includes(String(type.drupal_internal__tid));
+            return (
+              <label key={type.drupal_internal__tid} className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onTypeToggle(String(type.drupal_internal__tid))}
+                  className="h-3.5 w-3.5 rounded accent-brand-yellow cursor-pointer"
+                />
+                <span className="text-xs capitalize text-gray-700">{type.name}</span>
+              </label>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

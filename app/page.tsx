@@ -8,13 +8,13 @@ const techStack = [
   {
     name: "Next.js 14",
     icon: "▲",
-    description: "App Router, SSR, Server Components",
+    description: "App Router · Server & Client Components",
     color: "bg-black text-white",
   },
   {
     name: "Drupal",
     icon: "💧",
-    description: "Headless CMS · REST & OAuth 2.0",
+    description: "Headless CMS · REST API & JSON:API",
     color: "bg-blue-600 text-white",
   },
   {
@@ -30,31 +30,37 @@ const techStack = [
     color: "bg-cyan-500 text-white",
   },
   {
-    name: "OAuth 2.0",
+    name: "NextAuth.js",
     icon: "🔐",
-    description: "NextAuth · token refresh flow",
+    description: "OAuth 2.0 client credentials flow",
     color: "bg-brand-yellow text-gray-900",
+  },
+  {
+    name: "Vercel",
+    icon: "⚡",
+    description: "Analytics & Speed Insights",
+    color: "bg-gray-900 text-white",
   },
 ] as const;
 
 const features = [
   {
     icon: "🔗",
-    title: "Decoupled CMS",
+    title: "Drupal as a Headless CMS",
     description:
-      "Drupal acts as a pure data source, exposing Pokémon content via JSON REST endpoints consumed by Next.js.",
+      "Consumes Drupal JSON:API for detail pages with relationship includes, keeping the frontend fully decoupled.",
   },
   {
     icon: "🔑",
-    title: "OAuth 2.0 Authentication",
+    title: "OAuth 2.0 Client Credentials",
     description:
-      "Full password-grant OAuth flow against Drupal's Simple OAuth module, with silent JWT refresh handled server-side.",
+      "The Next.js backend exchanges client credentials with Drupal's Simple OAuth server and forwards the bearer token on every API call — secrets never reach the browser.",
   },
   {
     icon: "⚡",
-    title: "Server-Side Rendering",
+    title: "Hybrid Rendering",
     description:
-      "Pages are rendered on the server for fast initial loads and SEO-friendly markup out of the box.",
+      "The Pokédex list is server-rendered on first load for instant content, then switches to client-side fetch for pagination and filtering without a full page reload.",
   },
   {
     icon: "📡",
@@ -152,11 +158,8 @@ export default function HomePage() {
           <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 lg:text-4xl">
             Built with
           </h2>
-          <p className="mb-12 text-center text-gray-500">
-            Modern tools chosen for real-world, production-grade patterns.
-          </p>
 
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
             {techStack.map((tech) => (
               <div
                 key={tech.name}
@@ -183,10 +186,6 @@ export default function HomePage() {
           <h2 className="mb-3 text-center text-3xl font-extrabold text-gray-900 lg:text-4xl">
             What this project demonstrates
           </h2>
-          <p className="mb-12 text-center text-gray-500">
-            A showcase of full-stack engineering patterns across the entire
-            request lifecycle.
-          </p>
 
           <div className="grid gap-6 lg:grid-cols-3">
             {features.map((f) => (
@@ -207,7 +206,7 @@ export default function HomePage() {
 
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <footer className="mt-auto border-t border-gray-200 bg-white px-6 py-8 text-center">
-        <p className="container mx-auto text-sm text-gray-500">
+        <p className="container mx-auto text-sm text-gray-900">
           Built as a portfolio project ·{" "}
           <a
             href="https://github.com/vinicius-o-souza/pokedex-nextjs"
@@ -218,10 +217,32 @@ export default function HomePage() {
             View on GitHub ↗
           </a>
         </p>
-        <p className="mt-1 text-xs text-gray-400">
+        <div className="mt-1 text-gray-900 text-center text-sm">
+          <p>
+            Developed with love by{" "}
+            <a
+              href="https://www.linkedin.com/in/viniciusosouza/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              Vinicius de Oliveira Souza
+            </a>{" "}
+            &bull;{" "}
+            <a
+              href="http://deploya.com.br/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              deploya.com.br
+            </a>
+          </p>
+        </div>
+        <p className="mt-5 text-xs text-gray-900">
           Pokémon and all related names are trademarks of Nintendo / Game Freak.
         </p>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-gray-900">
           This project is not affiliated with or endorsed by Nintendo.
         </p>
       </footer>

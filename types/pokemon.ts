@@ -1,3 +1,25 @@
+export interface PokemonDetailStat {
+  name: string;
+  value: number;
+}
+
+export interface PokemonDetail {
+  uuid: string;
+  id: number; // field_pokeapi_id
+  nid: number;
+  name: string;
+  image: string;
+  types: PokemonType[];
+  weight: string;
+  height: string;
+  description: string | null;
+  baseExperience: number;
+  isLegendary: boolean;
+  isMythical: boolean;
+  stats: PokemonDetailStat[];
+  evolutions: PokemonListItem[];
+}
+
 export interface PokemonListItem {
   uuid: string;
   drupal_internal__nid: number;
@@ -42,6 +64,11 @@ export interface Pokemon {
 }
 
 export interface PokemonType {
+  drupal_internal__tid: number;
+  name: string;
+}
+
+export interface PokemonGeneration {
   drupal_internal__tid: number;
   name: string;
 }

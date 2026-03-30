@@ -77,3 +77,24 @@ export const TYPE_COLORS: Record<string, TypeColorConfig> = {
     text: "text-pink-900",
   },
 } as const;
+
+export const TYPE_HEX_COLORS: Record<string, string> = {
+  normal: "#9ca3af",
+  fire: "#f97316",
+  water: "#3b82f6",
+  electric: "#eab308",
+  grass: "#22c55e",
+  ice: "#67e8f9",
+  fighting: "#b91c1c",
+  poison: "#a855f7",
+  ground: "#d97706",
+  flying: "#818cf8",
+  psychic: "#ec4899",
+  bug: "#84cc16",
+  rock: "#a16207",
+  ghost: "#7c3aed",
+  dragon: "#1e40af",
+  dark: "#525252",
+  steel: "#94a3b8",
+  fairy: "#f472b6",
+};
