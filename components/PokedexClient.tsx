@@ -153,12 +153,12 @@ export function PokedexClient({ initialData, types, generations }: PokedexClient
               </div>
               <button
                 onClick={() => setFilterOpen(true)}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 lg:hidden"
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-4 text-base font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 lg:hidden"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M6 8h12M10 12h4" />
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6a1 1 0 011-1h16a1 1 0 01.707 1.707L14 13.414V19a1 1 0 01-.553.894l-4-2A1 1 0 019 17v-3.586L3.293 7.707A1 1 0 013 7V6z" />
                 </svg>
-                Filters
+                <span className="hidden md:block">Filters</span>
                 {selectedTypes.length > 0 && (
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-yellow text-xs font-bold text-gray-900">
                     {selectedTypes.length}

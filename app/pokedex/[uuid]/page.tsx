@@ -148,9 +148,9 @@ export default async function PokemonDetailPage({
   ]);
 
   return (
-    <div className="container mx-auto max-w-3xl min-h-screen rounded-b-3xl mt-6">
+    <div className="container mx-auto max-w-3xl min-h-screen lg:rounded-b-3xl lg:mt-6">
       {/* ── Colored header section ── */}
-      <div className={`relative ${bgClass} overflow-hidden rounded-t-3xl`}>
+      <div className={`relative ${bgClass} overflow-hidden lg:rounded-t-3xl`}>
         {/* Pokeball watermark */}
         <div className="absolute -right-4 -bottom-4 w-56 h-56 opacity-10 pointer-events-none select-none">
           <Image src="/pokeball.svg" alt="" fill className="object-contain" />

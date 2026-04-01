@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { encode, type JWT } from "next-auth/jwt";
 
+// Prevent Vercel/Next.js from caching this route — each request must generate
+// fresh PKCE values and state cookies. A cached redirect would replay stale
+// (or expired) cookies to subsequent users, causing ERR_JWT_EXPIRED at the
+// OAuth callback.
+export const dynamic = "force-dynamic";
+
 function base64url(data: Uint8Array): string {
   return Buffer.from(data)
     .toString("base64")
@@ -86,6 +92,7 @@ export async function GET() {
   };
 
   const response = NextResponse.redirect(registerUrl);
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
   response.cookies.set(stateCookieName, encryptedState, { ...sharedOpts, maxAge });
   response.cookies.set(pkceCookieName, encryptedVerifier, { ...sharedOpts, maxAge });
   // Tell NextAuth where to land the user after the OAuth callback completes.
